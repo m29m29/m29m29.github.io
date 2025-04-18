@@ -1,1 +1,126 @@
-
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Pomodoro Timer with Binaural Beats</title>
+        <style>
+            body {
+                font-family: Georgia, 'Times New Roman', Times, serif;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                margin: 0;
+                background-image: url ('img/tomato2.jpg');
+                color: #333;
+            }
+            #timer {
+                font-size: 4em;
+                margin-bottom: 20px;
+            }
+            #mode {
+                font-size: 1.5em;
+                margin-bottom: 20px;
+            }
+            .controls button {
+                padding: 10px 20px;
+                margin: 5px;
+                font-size: 1em;
+                border: none;
+                border-radius: 5px;
+                background-color: #3cb371;
+                color: white;
+                cursor: pointer;
+            }
+            .controls button:hover {
+                background-color: #27ae60;
+            }
+            #feedback {
+                margin-top: 30px;
+                font-size: 1.1em;
+            }
+            #feedback a {
+                color: #3cb371;
+                text-decoration: none;
+            }
+            #feedback a:hover {
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="mode">Modified Pomodoro Timer</div>
+        <div id="timer">25:00</div>
+        <div class="controls">
+            <button onclick="startTimer()">Start</button>
+            <button onclick="pauseTimer()">Pause</button>
+            <button onclick="resetTimer()">Reset</button>
+        </div>
+        <audio id="binaural" loop>
+            <source controls src="c:\Users\Lenovo\Downloads\Pure 40 HZ Binaural Beats_ The Frequency for FOCUS, MEMORY, and CONCENTRATION.mp3"type="audio/mpeg">
+        </audio>
+        <div id="feedback">
+            <p>Help us explore the effects of this learning technique on your studying! <a href="https://docs.google.com/forms/d/e/1FAIpQLSfiaFXHITaXO4GvnwrUKuUYpxjo0IJ7RFbCzqRDkHVGd3Ujzg/viewform?usp=header" target="_blank">Share your feedback here</a>.</p>
+        </div>
+    
+        <script>
+            let timeLeft = 25 * 60; // 25 minutes in seconds
+            let isRunning = false;
+            let isWorkSession = true;
+            let timerInterval = null;
+            const timerDisplay = document.getElementById('timer');
+            const modeDisplay = document.getElementById('mode');
+            const binauralAudio = document.getElementById('binaural');
+    
+            function updateDisplay() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+    
+            function startTimer() {
+                if (!isRunning) {
+                    isRunning = true;
+                    timerInterval = setInterval(() => {
+                        if (timeLeft > 0) {
+                            timeLeft--;
+                            updateDisplay();
+                            if (isWorkSession && binauralAudio.paused) {
+                                binauralAudio.play();
+                            }
+                        } else {
+                            isWorkSession = !isWorkSession;
+                            timeLeft = isWorkSession ? 25 * 60 : 5 * 60;
+                            modeDisplay.textContent = isWorkSession ? 'Work Session' : 'Break';
+                            binauralAudio.pause();
+                            updateDisplay();
+                        }
+                    }, 1000);
+                }
+            }
+    
+            function pauseTimer() {
+                if (isRunning) {
+                    isRunning = false;
+                    clearInterval(timerInterval);
+                    binauralAudio.pause();
+                }
+            }
+    
+            function resetTimer() {
+                isRunning = false;
+                clearInterval(timerInterval);
+                timeLeft = 25 * 60;
+                isWorkSession = true;
+                modeDisplay.textContent = 'Work Session';
+                updateDisplay();
+                binauralAudio.pause();
+                binauralAudio.currentTime = 0;
+            }
+    
+            updateDisplay();
+        </script>
+    </body>
+    </html>
